@@ -8,7 +8,12 @@ import * as ImagePicker from 'expo-image-picker'
 
 export function Profile() {
   async function handleUserPhotoSelect() {
-    await ImagePicker.launchImageLibraryAsync()
+    await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: 'images',
+      quality: 1,
+      aspect: [4, 4],
+      allowsEditing: true,
+    })
   }
 
   return (
