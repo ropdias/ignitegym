@@ -2,7 +2,10 @@ import {
   createBottomTabNavigator,
   BottomTabNavigationProp,
 } from '@react-navigation/bottom-tabs'
-import { createNativeStackNavigator } from '@react-navigation/native-stack'
+import {
+  createNativeStackNavigator,
+  NativeStackNavigationProp,
+} from '@react-navigation/native-stack'
 
 import { gluestackUIConfig } from '../../config/gluestack-ui.config'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -28,6 +31,7 @@ type AppRoutesTabs = {
 }
 
 export type AppNavigatorRoutesProps = BottomTabNavigationProp<AppRoutesTabs>
+export type HomeStackNavigationProp = NativeStackNavigationProp<HomeStackRoutes>
 
 const { Navigator: TabNavigator, Screen: TabScreen } =
   createBottomTabNavigator<AppRoutesTabs>()
