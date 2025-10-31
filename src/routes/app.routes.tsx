@@ -2,8 +2,10 @@ import {
   createBottomTabNavigator,
   BottomTabNavigationProp,
 } from '@react-navigation/bottom-tabs'
+import { createNativeStackNavigator } from '@react-navigation/native-stack'
 
 import { gluestackUIConfig } from '../../config/gluestack-ui.config'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import HomeSvg from '@assets/home.svg'
 import HistorySvg from '@assets/history.svg'
@@ -14,40 +16,64 @@ import { Exercise } from '@screens/Exercise'
 import { History } from '@screens/History'
 import { Profile } from '@screens/Profile'
 
+type HomeStackRoutes = {
+  homeList: undefined
+  exercise: undefined
+}
+
 type AppRoutesTabs = {
   home: undefined
-  exercise: undefined
-  profile: undefined
   history: undefined
+  profile: undefined
 }
 
 export type AppNavigatorRoutesProps = BottomTabNavigationProp<AppRoutesTabs>
 
-const { Navigator, Screen } = createBottomTabNavigator<AppRoutesTabs>()
+const { Navigator: TabNavigator, Screen: TabScreen } =
+  createBottomTabNavigator<AppRoutesTabs>()
+const { Navigator: StackNavigator, Screen: StackScreen } =
+  createNativeStackNavigator<HomeStackRoutes>()
+
+function HomeStack() {
+  return (
+    <StackNavigator screenOptions={{ headerShown: false }}>
+      <StackScreen name="homeList" component={Home} />
+      <StackScreen name="exercise" component={Exercise} />
+    </StackNavigator>
+  )
+}
 
 export function AppRoutes() {
   const { tokens } = gluestackUIConfig
-  const iconSize = tokens.space['6']
+  const iconSize = tokens.space['8']
+  const insets = useSafeAreaInsets()
 
   return (
-    <Navigator
+    <TabNavigator
       screenOptions={{
         headerShown: false,
         tabBarShowLabel: false,
         tabBarActiveTintColor: tokens.colors.green500,
         tabBarInactiveTintColor: tokens.colors.gray200,
+        tabBarStyle: {
+          backgroundColor: tokens.colors.gray600,
+          borderTopWidth: 0,
+          height: 80 + insets.bottom, // compensates for the lower safe area on iOS
+          paddingTop: 24,
+          paddingBottom: 24 + insets.bottom,
+        },
       }}
     >
-      <Screen
+      <TabScreen
         name="home"
-        component={Home}
+        component={HomeStack}
         options={{
           tabBarIcon: ({ color }) => (
             <HomeSvg fill={color} width={iconSize} height={iconSize} />
           ),
         }}
       />
-      <Screen
+      <TabScreen
         name="history"
         component={History}
         options={{
@@ -56,7 +82,7 @@ export function AppRoutes() {
           ),
         }}
       />
-      <Screen
+      <TabScreen
         name="profile"
         component={Profile}
         options={{
@@ -65,7 +91,6 @@ export function AppRoutes() {
           ),
         }}
       />
-      <Screen name="exercise" component={Exercise} />
-    </Navigator>
+    </TabNavigator>
   )
 }
