@@ -8,16 +8,16 @@ import { Exercise } from '@screens/Exercise'
 import { History } from '@screens/History'
 import { Profile } from '@screens/Profile'
 
-type AppRoutes = {
+type AppRoutesTabs = {
   home: undefined
   exercise: undefined
   profile: undefined
   history: undefined
 }
 
-export type AppNavigatorRoutesProps = BottomTabNavigationProp<AppRoutes>
+export type AppNavigatorRoutesProps = BottomTabNavigationProp<AppRoutesTabs>
 
-const { Navigator, Screen } = createBottomTabNavigator<AppRoutes>()
+const { Navigator, Screen } = createBottomTabNavigator<AppRoutesTabs>()
 
 export function AppRoutes() {
   return (
