@@ -27,6 +27,7 @@
     "lucide-react-native": "^0.552.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",
+    "react-hook-form": "^7.66.0",
     "react-native": "0.81.5",
     "react-native-safe-area-context": "5.4.0",
     "react-native-screens": "~4.11.1",
