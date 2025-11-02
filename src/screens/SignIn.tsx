@@ -59,6 +59,7 @@ export function SignIn() {
       setIsLoading(true)
       await signIn(email, password)
     } catch (error) {
+      setIsLoading(false)
       const isAppError = error instanceof AppError
 
       const description = isAppError
@@ -77,7 +78,6 @@ export function SignIn() {
           />
         ),
       })
-      setIsLoading(false)
     }
   }
 
