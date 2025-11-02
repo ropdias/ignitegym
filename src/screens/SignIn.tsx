@@ -6,6 +6,9 @@ import {
   Text,
   VStack,
 } from '@gluestack-ui/themed'
+import { useForm, Controller } from 'react-hook-form'
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
 
 import { useNavigation } from '@react-navigation/native'
 import { AuthNavigatorRoutesProps } from '@routes/auth.routes'
@@ -15,11 +18,34 @@ import Logo from '@assets/logo.svg'
 import { Input } from '@components/Input'
 import { Button } from '@components/Button'
 
+const signInSchema = z.object({
+  email: z.string().min(1, 'Informe o e-mail').trim().email('E-mail inválido'),
+  password: z.string().min(1, 'Informe a senha').trim(),
+})
+
+type SignInFormData = z.infer<typeof signInSchema>
+
 export function SignIn() {
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignInFormData>({
+    resolver: zodResolver(signInSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  })
+
   const navigation = useNavigation<AuthNavigatorRoutesProps>()
 
   function handleNewAccount() {
     navigation.navigate('signUp')
+  }
+
+  function handleSignIn({ email, password }: SignInFormData) {
+    console.log({ email, password })
   }
 
   return (
@@ -49,14 +75,36 @@ export function SignIn() {
           <Center gap="$2">
             <Heading color="$gray100">Acesse sua conta</Heading>
 
-            <Input
-              placeholder="E-mail"
-              keyboardType="email-address"
-              autoCapitalize="none"
+            <Controller
+              control={control}
+              name="email"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  placeholder="E-mail"
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  onChangeText={onChange}
+                  value={value}
+                  errorMessage={errors.email?.message}
+                />
+              )}
             />
-            <Input placeholder="Senha" secureTextEntry />
 
-            <Button title="Acessar" />
+            <Controller
+              control={control}
+              name="password"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  placeholder="Senha"
+                  secureTextEntry
+                  onChangeText={onChange}
+                  value={value}
+                  errorMessage={errors.password?.message}
+                />
+              )}
+            />
+
+            <Button title="Acessar" onPress={handleSubmit(handleSignIn)} />
           </Center>
 
           <Center flex={1} justifyContent="flex-end" marginTop="$4">
