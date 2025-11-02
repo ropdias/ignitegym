@@ -2,7 +2,7 @@ import axios from 'axios'
 import { AppError } from '@utils/AppError'
 
 const api = axios.create({
-  baseURL: 'http://172.20.10.6:3333',
+  baseURL: 'http://192.168.15.134:3333',
   timeout: 10000, // 10 seconds
 })
 
