@@ -7,6 +7,8 @@ import {
   VStack,
 } from '@gluestack-ui/themed'
 import { useForm, Controller } from 'react-hook-form'
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
 
 import { useNavigation } from '@react-navigation/native'
 import { AuthNavigatorRoutesProps } from '@routes/auth.routes'
@@ -16,19 +18,41 @@ import Logo from '@assets/logo.svg'
 import { Input } from '@components/Input'
 import { Button } from '@components/Button'
 
-type FormDataProps = {
-  name: string
-  email: string
-  password: string
-  password_confirm: string
-}
+const signUpSchema = z
+  .object({
+    name: z.string().min(1, 'Nome é obrigatório').trim(),
+    email: z
+      .string()
+      .min(1, 'Informe o e-mail')
+      .trim()
+      .email('E-mail inválido'),
+    password: z.string().min(1, 'Informe a senha').trim(),
+    password_confirm: z
+      .string()
+      .min(1, 'Confirmação de senha é obrigatória')
+      .trim(),
+  })
+  .refine((data) => data.password === data.password_confirm, {
+    path: ['password_confirm'],
+    message: 'As senhas não coincidem',
+  })
+
+type SignUpFormData = z.infer<typeof signUpSchema>
 
 export function SignUp() {
   const {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormDataProps>()
+  } = useForm<SignUpFormData>({
+    resolver: zodResolver(signUpSchema),
+    defaultValues: {
+      name: '',
+      email: '',
+      password: '',
+      password_confirm: '',
+    },
+  })
 
   const navigation = useNavigation<AuthNavigatorRoutesProps>()
 
@@ -41,7 +65,7 @@ export function SignUp() {
     email,
     password,
     password_confirm,
-  }: FormDataProps) {
+  }: SignUpFormData) {
     console.log({ name, email, password, password_confirm })
   }
 
@@ -75,9 +99,6 @@ export function SignUp() {
             <Controller
               control={control}
               name="name"
-              rules={{
-                required: 'Informe o nome.',
-              }}
               render={({ field: { onChange, value } }) => (
                 <Input
                   placeholder="Nome"
@@ -91,13 +112,6 @@ export function SignUp() {
             <Controller
               control={control}
               name="email"
-              rules={{
-                required: 'Informe o email.',
-                pattern: {
-                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                  message: 'E-mail inválido',
-                },
-              }}
               render={({ field: { onChange, value } }) => (
                 <Input
                   placeholder="E-mail"
@@ -119,6 +133,7 @@ export function SignUp() {
                   secureTextEntry
                   onChangeText={onChange}
                   value={value}
+                  errorMessage={errors.password?.message}
                 />
               )}
             />
@@ -133,6 +148,7 @@ export function SignUp() {
                   value={value}
                   onSubmitEditing={handleSubmit(handleSignUp)}
                   returnKeyType="send"
+                  errorMessage={errors.password_confirm?.message}
                 />
               )}
             />
