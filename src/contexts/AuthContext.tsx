@@ -1,4 +1,5 @@
 import { createContext, ReactNode, useState } from 'react'
+import { storageUserSave } from '@storage/storageUser'
 import { api } from '@services/api'
 
 import { UserDTO } from '@dtos/UserDTO'
@@ -25,6 +26,7 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
 
       if (data.user) {
         setUser(data.user)
+        storageUserSave(data.user)
       }
     } catch (error) {
       throw error
