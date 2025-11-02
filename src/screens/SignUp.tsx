@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import {
   Center,
   Heading,
@@ -21,6 +22,7 @@ import { Button } from '@components/Button'
 import { api } from '@services/api'
 import { AppError } from '@utils/AppError'
 import { ToastMessage } from '@components/ToastMessage'
+import { useAuth } from '@hooks/useAuth'
 
 const signUpSchema = z
   .object({
@@ -44,6 +46,8 @@ const signUpSchema = z
 type SignUpFormData = z.infer<typeof signUpSchema>
 
 export function SignUp() {
+  const [isLoading, setIsLoading] = useState(false)
+  const { signIn } = useAuth()
   const toast = useToast()
 
   const {
@@ -68,8 +72,11 @@ export function SignUp() {
 
   async function handleSignUp({ name, email, password }: SignUpFormData) {
     try {
+      setIsLoading(true)
       await api.post('/users', { name, email, password })
+      await signIn(email, password)
     } catch (error) {
+      setIsLoading(false)
       const isAppError = error instanceof AppError
 
       const description = isAppError
@@ -178,6 +185,7 @@ export function SignUp() {
             <Button
               title="Criar e acessar"
               onPress={handleSubmit(handleSignUp)}
+              isLoading={isLoading}
             />
           </Center>
 
