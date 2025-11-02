@@ -4,6 +4,7 @@ import {
   Image,
   ScrollView,
   Text,
+  useToast,
   VStack,
 } from '@gluestack-ui/themed'
 import { useForm, Controller } from 'react-hook-form'
@@ -19,6 +20,9 @@ import { Input } from '@components/Input'
 import { Button } from '@components/Button'
 import { useAuth } from '@hooks/useAuth'
 
+import { AppError } from '@utils/AppError'
+import { ToastMessage } from '@components/ToastMessage'
+
 const signInSchema = z.object({
   email: z.string().min(1, 'Informe o e-mail').trim().email('E-mail inválido'),
   password: z.string().min(1, 'Informe a senha').trim(),
@@ -28,6 +32,7 @@ type SignInFormData = z.infer<typeof signInSchema>
 
 export function SignIn() {
   const { signIn } = useAuth()
+  const toast = useToast()
 
   const {
     control,
@@ -48,7 +53,28 @@ export function SignIn() {
   }
 
   async function handleSignIn({ email, password }: SignInFormData) {
-    await signIn(email, password)
+    try {
+      await signIn(email, password)
+    } catch (error) {
+      const isAppError = error instanceof AppError
+
+      const description = isAppError
+        ? error.message
+        : 'Não foi possível entrar. Tente novamente mais tarde.'
+
+      toast.show({
+        placement: 'top',
+        render: ({ id }) => (
+          <ToastMessage
+            id={id}
+            action="error"
+            title="Erro ao fazer Login"
+            description={description}
+            onClose={() => toast.close(id)}
+          />
+        ),
+      })
+    }
   }
 
   return (
