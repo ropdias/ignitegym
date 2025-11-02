@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import {
   Center,
   Heading,
@@ -31,6 +32,7 @@ const signInSchema = z.object({
 type SignInFormData = z.infer<typeof signInSchema>
 
 export function SignIn() {
+  const [isLoading, setIsLoading] = useState(false)
   const { signIn } = useAuth()
   const toast = useToast()
 
@@ -54,6 +56,7 @@ export function SignIn() {
 
   async function handleSignIn({ email, password }: SignInFormData) {
     try {
+      setIsLoading(true)
       await signIn(email, password)
     } catch (error) {
       const isAppError = error instanceof AppError
@@ -74,6 +77,7 @@ export function SignIn() {
           />
         ),
       })
+      setIsLoading(false)
     }
   }
 
@@ -133,7 +137,11 @@ export function SignIn() {
               )}
             />
 
-            <Button title="Acessar" onPress={handleSubmit(handleSignIn)} />
+            <Button
+              title="Acessar"
+              onPress={handleSubmit(handleSignIn)}
+              isLoading={isLoading}
+            />
           </Center>
 
           <Center flex={1} justifyContent="flex-end" marginTop="$4">
