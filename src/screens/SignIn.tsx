@@ -47,8 +47,8 @@ export function SignIn() {
     navigation.navigate('signUp')
   }
 
-  function handleSignIn({ email, password }: SignInFormData) {
-    signIn(email, password)
+  async function handleSignIn({ email, password }: SignInFormData) {
+    await signIn(email, password)
   }
 
   return (
