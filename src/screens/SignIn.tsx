@@ -17,6 +17,7 @@ import BackgroundImg from '@assets/background.png'
 import Logo from '@assets/logo.svg'
 import { Input } from '@components/Input'
 import { Button } from '@components/Button'
+import { useAuth } from '@hooks/useAuth'
 
 const signInSchema = z.object({
   email: z.string().min(1, 'Informe o e-mail').trim().email('E-mail inválido'),
@@ -26,6 +27,8 @@ const signInSchema = z.object({
 type SignInFormData = z.infer<typeof signInSchema>
 
 export function SignIn() {
+  const { signIn } = useAuth()
+
   const {
     control,
     handleSubmit,
@@ -45,7 +48,7 @@ export function SignIn() {
   }
 
   function handleSignIn({ email, password }: SignInFormData) {
-    console.log({ email, password })
+    signIn(email, password)
   }
 
   return (
