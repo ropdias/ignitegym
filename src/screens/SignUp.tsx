@@ -1,4 +1,3 @@
-import { Alert } from 'react-native'
 import {
   Center,
   Heading,
@@ -6,6 +5,7 @@ import {
   ScrollView,
   Text,
   VStack,
+  useToast,
 } from '@gluestack-ui/themed'
 import { useForm, Controller } from 'react-hook-form'
 import { z } from 'zod'
@@ -19,7 +19,8 @@ import Logo from '@assets/logo.svg'
 import { Input } from '@components/Input'
 import { Button } from '@components/Button'
 import { api } from '@services/api'
-import { isAxiosError } from 'axios'
+import { AppError } from '@utils/AppError'
+import { ToastMessage } from '@components/ToastMessage'
 
 const signUpSchema = z
   .object({
@@ -43,6 +44,8 @@ const signUpSchema = z
 type SignUpFormData = z.infer<typeof signUpSchema>
 
 export function SignUp() {
+  const toast = useToast()
+
   const {
     control,
     handleSubmit,
@@ -65,12 +68,26 @@ export function SignUp() {
 
   async function handleSignUp({ name, email, password }: SignUpFormData) {
     try {
-      const response = await api.post('/users', { name, email, password })
-      console.log(response.data)
+      await api.post('/users', { name, email, password })
     } catch (error) {
-      if (isAxiosError(error)) {
-        Alert.alert(error.response?.data.message)
-      }
+      const isAppError = error instanceof AppError
+
+      const description = isAppError
+        ? error.message
+        : 'Não foi possível criar a conta. Tente novamente mais tarde'
+
+      toast.show({
+        placement: 'top',
+        render: ({ id }) => (
+          <ToastMessage
+            id={id}
+            action="error"
+            title="Erro ao criar conta"
+            description={description}
+            onClose={() => toast.close(id)}
+          />
+        ),
+      })
     }
   }
 
