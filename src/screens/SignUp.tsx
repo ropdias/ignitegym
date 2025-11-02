@@ -17,6 +17,7 @@ import BackgroundImg from '@assets/background.png'
 import Logo from '@assets/logo.svg'
 import { Input } from '@components/Input'
 import { Button } from '@components/Button'
+import { api } from '@services/api'
 
 const signUpSchema = z
   .object({
@@ -61,17 +62,8 @@ export function SignUp() {
   }
 
   async function handleSignUp({ name, email, password }: SignUpFormData) {
-    const response = await fetch('http://localhost:3333/users', {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ name, email, password }),
-    })
-
-    const data = await response.json()
-    console.log(data)
+    const response = await api.post('/users', { name, email, password })
+    console.log(response.data)
   }
 
   return (
