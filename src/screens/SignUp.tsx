@@ -1,3 +1,4 @@
+import { Alert } from 'react-native'
 import {
   Center,
   Heading,
@@ -18,6 +19,7 @@ import Logo from '@assets/logo.svg'
 import { Input } from '@components/Input'
 import { Button } from '@components/Button'
 import { api } from '@services/api'
+import { isAxiosError } from 'axios'
 
 const signUpSchema = z
   .object({
@@ -62,8 +64,14 @@ export function SignUp() {
   }
 
   async function handleSignUp({ name, email, password }: SignUpFormData) {
-    const response = await api.post('/users', { name, email, password })
-    console.log(response.data)
+    try {
+      const response = await api.post('/users', { name, email, password })
+      console.log(response.data)
+    } catch (error) {
+      if (isAxiosError(error)) {
+        Alert.alert(error.response?.data.message)
+      }
+    }
   }
 
   return (
