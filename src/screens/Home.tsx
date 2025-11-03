@@ -15,7 +15,7 @@ import { Loading } from '@components/Loading'
 export function Home() {
   const [exercises, setExercises] = useState<ExerciseDTO[]>([])
   const [groups, setGroups] = useState<string[]>([])
-  const [groupSelected, setGroupSelected] = useState('bíceps')
+  const [groupSelected, setGroupSelected] = useState('antebraço')
   const [isLoading, setIsLoading] = useState(true)
 
   const navigation = useNavigation<HomeStackNavigationProp>()
