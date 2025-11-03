@@ -105,14 +105,13 @@ export function Exercise() {
           </HStack>
         </HStack>
       </VStack>
-
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 32 }}
-      >
-        {isLoading ? (
-          <Loading />
-        ) : (
+      {isLoading ? (
+        <Loading />
+      ) : (
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 32 }}
+        >
           <VStack p="$8">
             <Image
               source={{
@@ -151,8 +150,8 @@ export function Exercise() {
               <Button title="Marcar como realizado" />
             </Box>
           </VStack>
-        )}
-      </ScrollView>
+        </ScrollView>
+      )}
     </VStack>
   )
 }
