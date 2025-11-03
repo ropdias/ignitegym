@@ -7,6 +7,7 @@ import {
   VStack,
   Icon,
 } from '@gluestack-ui/themed'
+import { api } from '@services/api'
 import { ChevronRight } from 'lucide-react-native'
 import { TouchableOpacity, TouchableOpacityProps } from 'react-native'
 
@@ -27,7 +28,7 @@ export function ExerciseCard({ data, ...props }: Props) {
       >
         <Image
           source={{
-            uri: 'https://static.wixstatic.com/media/2edbed_60c206e178ad4eb3801f4f47fc6523df~mv2.webp/v1/fill/w_350,h_375,al_c/2edbed_60c206e178ad4eb3801f4f47fc6523df~mv2.webp',
+            uri: `${api.defaults.baseURL}/exercise/thumb/${data.thumb}`,
           }}
           alt="Imagem do exercício"
           w="$16"
