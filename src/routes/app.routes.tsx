@@ -21,7 +21,9 @@ import { Profile } from '@screens/Profile'
 
 type HomeStackRoutes = {
   homeList: undefined
-  exercise: undefined
+  exercise: {
+    exerciseId: string
+  }
 }
 
 type AppRoutesTabs = {
