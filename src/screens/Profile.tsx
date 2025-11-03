@@ -9,15 +9,16 @@ import { useState } from 'react'
 import { File } from 'expo-file-system'
 import { ToastMessage } from '@components/ToastMessage'
 import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useAuth } from '@hooks/useAuth'
 import { Controller, useForm } from 'react-hook-form'
 
 const profileSchema = z.object({
   name: z.string().min(1, 'Nome é obrigatório').trim(),
   email: z.string().min(1, 'Informe o e-mail').trim().email('E-mail inválido'),
-  oldPassword: z.string().min(1, 'Informe a senha antiga').trim(),
-  newPassword: z.string().min(1, 'Informe a nova senha').trim(),
-  newPasswordConfirm: z
+  old_password: z.string().min(1, 'Informe a senha antiga').trim(),
+  password: z.string().min(1, 'Informe a nova senha').trim(),
+  confirm_password: z
     .string()
     .min(1, 'Confirmação de senha é obrigatória')
     .trim(),
@@ -29,12 +30,24 @@ export function Profile() {
   const [userPhoto, setUserPhoto] = useState('https://github.com/ropdias.png')
   const toast = useToast()
   const { user } = useAuth()
-  const { control } = useForm<ProfileFormData>({
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ProfileFormData>({
+    resolver: zodResolver(profileSchema),
     defaultValues: {
       name: user.name,
       email: user.email,
+      old_password: '',
+      password: '',
+      confirm_password: '',
     },
   })
+
+  async function handleProfileUpdate(data: ProfileFormData) {
+    console.log(data)
+  }
 
   async function handleUserPhotoSelect() {
     try {
@@ -109,6 +122,7 @@ export function Profile() {
                   bg="$gray600"
                   onChangeText={onChange}
                   value={value}
+                  errorMessage={errors.name?.message}
                 />
               )}
             />
@@ -121,6 +135,7 @@ export function Profile() {
                   isReadOnly
                   onChangeText={onChange}
                   value={value}
+                  errorMessage={errors.email?.message}
                 />
               )}
             />
@@ -137,15 +152,52 @@ export function Profile() {
           </Heading>
 
           <Center w="$full" gap="$4">
-            <Input placeholder="Senha antiga" bg="$gray600" secureTextEntry />
-            <Input placeholder="Nova senha" bg="$gray600" secureTextEntry />
-            <Input
-              placeholder="Confirme a nova senha"
-              bg="$gray600"
-              secureTextEntry
+            <Controller
+              control={control}
+              name="old_password"
+              render={({ field: { onChange } }) => (
+                <Input
+                  placeholder="Senha antiga"
+                  bg="$gray600"
+                  secureTextEntry
+                  onChangeText={onChange}
+                  errorMessage={errors.old_password?.message}
+                />
+              )}
             />
 
-            <Button title="Atualizar" />
+            <Controller
+              control={control}
+              name="password"
+              render={({ field: { onChange } }) => (
+                <Input
+                  placeholder="Nova senha"
+                  bg="$gray600"
+                  secureTextEntry
+                  onChangeText={onChange}
+                  errorMessage={errors.password?.message}
+                />
+              )}
+            />
+
+            <Controller
+              control={control}
+              name="confirm_password"
+              render={({ field: { onChange } }) => (
+                <Input
+                  placeholder="Confirme a nova senha"
+                  bg="$gray600"
+                  secureTextEntry
+                  onChangeText={onChange}
+                  errorMessage={errors.confirm_password?.message}
+                />
+              )}
+            />
+
+            <Button
+              title="Atualizar"
+              onPress={handleSubmit(handleProfileUpdate)}
+            />
           </Center>
         </Center>
       </ScrollView>
