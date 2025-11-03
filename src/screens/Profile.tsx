@@ -8,10 +8,33 @@ import * as ImagePicker from 'expo-image-picker'
 import { useState } from 'react'
 import { File } from 'expo-file-system'
 import { ToastMessage } from '@components/ToastMessage'
+import { z } from 'zod'
+import { useAuth } from '@hooks/useAuth'
+import { Controller, useForm } from 'react-hook-form'
+
+const profileSchema = z.object({
+  name: z.string().min(1, 'Nome é obrigatório').trim(),
+  email: z.string().min(1, 'Informe o e-mail').trim().email('E-mail inválido'),
+  oldPassword: z.string().min(1, 'Informe a senha antiga').trim(),
+  newPassword: z.string().min(1, 'Informe a nova senha').trim(),
+  newPasswordConfirm: z
+    .string()
+    .min(1, 'Confirmação de senha é obrigatória')
+    .trim(),
+})
+
+type ProfileFormData = z.infer<typeof profileSchema>
 
 export function Profile() {
   const [userPhoto, setUserPhoto] = useState('https://github.com/ropdias.png')
   const toast = useToast()
+  const { user } = useAuth()
+  const { control } = useForm<ProfileFormData>({
+    defaultValues: {
+      name: user.name,
+      email: user.email,
+    },
+  })
 
   async function handleUserPhotoSelect() {
     try {
@@ -77,11 +100,29 @@ export function Profile() {
           </TouchableOpacity>
 
           <Center w="$full" gap="$4">
-            <Input placeholder="Nome" bg="$gray600" />
-            <Input
-              value="rodrigopdias.dev@gmail.com"
-              bg="$gray600"
-              isReadOnly
+            <Controller
+              control={control}
+              name="name"
+              render={({ field: { value, onChange } }) => (
+                <Input
+                  placeholder="Nome"
+                  bg="$gray600"
+                  onChangeText={onChange}
+                  value={value}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="email"
+              render={({ field: { value, onChange } }) => (
+                <Input
+                  bg="$gray600"
+                  isReadOnly
+                  onChangeText={onChange}
+                  value={value}
+                />
+              )}
             />
           </Center>
           <Heading
