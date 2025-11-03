@@ -4,19 +4,15 @@ import { Group } from '@components/Group'
 import { HomeHeader } from '@components/HomeHeader'
 import { ExerciseCard } from '@components/ExerciseCard'
 import { Heading, HStack, Text, useToast, VStack } from '@gluestack-ui/themed'
-import { useNavigation } from '@react-navigation/native'
+import { useFocusEffect, useNavigation } from '@react-navigation/native'
 import { HomeStackNavigationProp } from '@routes/app.routes'
 import { api } from '@services/api'
 import { AppError } from '@utils/AppError'
 import { ToastMessage } from '@components/ToastMessage'
+import { ExerciseDTO } from '@dtos/ExerciseDTO'
 
 export function Home() {
-  const [exercises, setExercises] = useState([
-    'Puxada frontal',
-    'Remada curvada',
-    'Remada unilateral',
-    'Levantamento terra',
-  ])
+  const [exercises, setExercises] = useState<ExerciseDTO[]>([])
   const [groups, setGroups] = useState<string[]>([])
   const [groupSelected, setGroupSelected] = useState('Costas')
 
@@ -44,7 +40,7 @@ export function Home() {
           <ToastMessage
             id={id}
             action="error"
-            title="Erro ao fazer Login"
+            title="Erro ao buscar os grupos musculares"
             description={description}
             onClose={() => toast.close(id)}
           />
@@ -56,6 +52,37 @@ export function Home() {
   useEffect(() => {
     fetchGroups()
   }, [fetchGroups])
+
+  useFocusEffect(
+    useCallback(() => {
+      const fecthExercisesByGroup = async () => {
+        try {
+          const response = await api.get(`/exercises/bygroup/${groupSelected}`)
+          setExercises(response.data)
+        } catch (error) {
+          const isAppError = error instanceof AppError
+          const description = isAppError
+            ? error.message
+            : 'Não foi possível carregar os exercícios'
+
+          toast.show({
+            placement: 'top',
+            render: ({ id }) => (
+              <ToastMessage
+                id={id}
+                action="error"
+                title="Erro ao buscar os exercícios"
+                description={description}
+                onClose={() => toast.close(id)}
+              />
+            ),
+          })
+        }
+      }
+
+      fecthExercisesByGroup()
+    }, [toast, groupSelected]),
+  )
 
   return (
     <VStack flex={1}>
@@ -88,7 +115,7 @@ export function Home() {
 
         <FlatList
           data={exercises}
-          keyExtractor={(item) => item}
+          keyExtractor={(item) => item.id}
           renderItem={() => (
             <ExerciseCard onPress={handleOpenExerciseDetails} />
           )}
