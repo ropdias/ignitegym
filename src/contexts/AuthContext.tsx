@@ -73,7 +73,7 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
     }
   }
 
-  async function signOut() {
+  const signOut = useCallback(async () => {
     try {
       setIsLoadingUserStorageData(true)
       setUser({} as UserDTO)
@@ -84,7 +84,7 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
     } finally {
       setIsLoadingUserStorageData(false)
     }
-  }
+  }, [])
 
   const updateUserProfile = useCallback(async (userUpdated: UserDTO) => {
     try {
@@ -114,6 +114,14 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
   useEffect(() => {
     loadUserData()
   }, [loadUserData])
+
+  useEffect(() => {
+    const unsubscribe = api.registerInterceptTokenManager(signOut)
+
+    return () => {
+      unsubscribe()
+    }
+  }, [signOut])
 
   return (
     <AuthContext.Provider
