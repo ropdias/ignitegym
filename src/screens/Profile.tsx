@@ -13,16 +13,49 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useAuth } from '@hooks/useAuth'
 import { Controller, useForm } from 'react-hook-form'
 
-const profileSchema = z.object({
-  name: z.string().min(1, 'Nome é obrigatório').trim(),
-  email: z.string().min(1, 'Informe o e-mail').trim().email('E-mail inválido'),
-  old_password: z.string().min(1, 'Informe a senha antiga').trim(),
-  password: z.string().min(1, 'Informe a nova senha').trim(),
-  confirm_password: z
-    .string()
-    .min(1, 'Confirmação de senha é obrigatória')
-    .trim(),
-})
+const profileSchema = z
+  .object({
+    name: z.string().trim().min(1, 'Nome é obrigatório'),
+    email: z
+      .string()
+      .trim()
+      .min(1, 'Informe o e-mail')
+      .email('E-mail inválido'),
+    old_password: z.string().trim().min(1, 'Informe a senha antiga'),
+    password: z
+      .union([z.string().trim(), z.null()])
+      .transform((val) => (val === '' || val === null ? null : val))
+      .refine(
+        (val) => val === null || val.length >= 6,
+        'A senha deve ter pelo menos 6 caracteres.',
+      ),
+    confirm_password: z
+      .string()
+      .trim()
+      .transform((val) => (val === '' ? null : val))
+      .nullable(),
+  })
+  .superRefine((data, ctx) => {
+    const { password, confirm_password } = data
+
+    // If the user filled the password, confirmation is mandatory
+    if (password && !confirm_password) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['confirm_password'],
+        message: 'Informe a confirmação da senha.',
+      })
+    }
+
+    // If both exist, they need to match
+    if (password && confirm_password && password !== confirm_password) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['confirm_password'],
+        message: 'A confirmação de senha não confere.',
+      })
+    }
+  })
 
 type ProfileFormData = z.infer<typeof profileSchema>
 
