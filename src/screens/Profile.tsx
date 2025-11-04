@@ -14,6 +14,8 @@ import { useAuth } from '@hooks/useAuth'
 import { Controller, useForm } from 'react-hook-form'
 import { AppError } from '@utils/AppError'
 import { api } from '@services/api'
+import * as Crypto from 'expo-crypto'
+import defaulUserPhotoImg from '@assets/userPhotoDefault.png'
 
 const profileSchema = z
   .object({
@@ -87,7 +89,6 @@ type ProfileFormData = z.infer<typeof profileSchema>
 
 export function Profile() {
   const [isUpdating, setIsUpdating] = useState(false)
-  const [userPhoto, setUserPhoto] = useState('https://github.com/ropdias.png')
   const toast = useToast()
   const { user, updateUserProfile } = useAuth()
   const {
@@ -185,10 +186,65 @@ export function Profile() {
           })
         }
 
-        setUserPhoto(photoSelected.assets[0].uri)
+        const fileExtension = photoSelected.assets[0].uri.split('.').pop()
+
+        const photoFile = {
+          name: `${Crypto.randomUUID()}.${fileExtension}`,
+          uri: photoSelected.assets[0].uri,
+          type: photoSelected.assets[0].mimeType || `image/${fileExtension}`,
+        } as any
+
+        const userPhotoUploadForm = new FormData()
+
+        userPhotoUploadForm.append('avatar', photoFile)
+
+        const avatarUpdtedResponse = await api.patch(
+          '/users/avatar',
+          userPhotoUploadForm,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          },
+        )
+
+        const userUpdated = user
+
+        userUpdated.avatar = avatarUpdtedResponse.data.avatar
+
+        await updateUserProfile(userUpdated)
+
+        toast.show({
+          placement: 'top',
+          render: ({ id }) => (
+            <ToastMessage
+              id={id}
+              action="success"
+              title="Sucesso!"
+              description="Foto atualizada"
+              onClose={() => toast.close(id)}
+            />
+          ),
+        })
       }
     } catch (error) {
-      console.log(error)
+      const isAppError = error instanceof AppError
+      const description = isAppError
+        ? error.message
+        : 'Não foi possível atualizar a imagem do perfil. Tente novamente mais tarde.'
+
+      toast.show({
+        placement: 'top',
+        render: ({ id }) => (
+          <ToastMessage
+            id={id}
+            action="error"
+            title="Erro ao atualizar a imagem do perfil"
+            description={description}
+            onClose={() => toast.close(id)}
+          />
+        ),
+      })
     }
   }
 
@@ -198,7 +254,11 @@ export function Profile() {
       <ScrollView contentContainerStyle={{ paddingBottom: 36 }}>
         <Center mt="$6" px="$10">
           <UserPhoto
-            source={{ uri: userPhoto }}
+            source={
+              user.avatar
+                ? { uri: `${api.defaults.baseURL}/avatar/${user.avatar}` }
+                : defaulUserPhotoImg
+            }
             size="xl"
             alt="Imagem do usuário"
           />
