@@ -12,6 +12,8 @@ import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useAuth } from '@hooks/useAuth'
 import { Controller, useForm } from 'react-hook-form'
+import { AppError } from '@utils/AppError'
+import { api } from '@services/api'
 
 const profileSchema = z
   .object({
@@ -84,6 +86,7 @@ const profileSchema = z
 type ProfileFormData = z.infer<typeof profileSchema>
 
 export function Profile() {
+  const [isUpdating, setIsUpdating] = useState(false)
   const [userPhoto, setUserPhoto] = useState('https://github.com/ropdias.png')
   const toast = useToast()
   const { user } = useAuth()
@@ -103,7 +106,43 @@ export function Profile() {
   })
 
   async function handleProfileUpdate(data: ProfileFormData) {
-    console.log(data)
+    try {
+      setIsUpdating(true)
+      await api.put('/users', data)
+
+      toast.show({
+        placement: 'top',
+        render: ({ id }) => (
+          <ToastMessage
+            id={id}
+            action="success"
+            title="Sucesso!"
+            description="Perfil atualizado"
+            onClose={() => toast.close(id)}
+          />
+        ),
+      })
+    } catch (error) {
+      const isAppError = error instanceof AppError
+      const description = isAppError
+        ? error.message
+        : 'Não foi possível atualizar os dados. Tente novamente mais tarde.'
+
+      toast.show({
+        placement: 'top',
+        render: ({ id }) => (
+          <ToastMessage
+            id={id}
+            action="error"
+            title="Erro ao atualizar o perfil"
+            description={description}
+            onClose={() => toast.close(id)}
+          />
+        ),
+      })
+    } finally {
+      setIsUpdating(false)
+    }
   }
 
   async function handleUserPhotoSelect() {
@@ -254,6 +293,7 @@ export function Profile() {
             <Button
               title="Atualizar"
               onPress={handleSubmit(handleProfileUpdate)}
+              isLoading={isUpdating}
             />
           </Center>
         </Center>
