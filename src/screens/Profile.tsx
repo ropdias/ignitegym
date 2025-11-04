@@ -21,14 +21,14 @@ const profileSchema = z
       .trim()
       .min(1, 'Informe o e-mail')
       .email('E-mail inválido'),
-    old_password: z.string().trim().min(1, 'Informe a senha antiga'),
+    old_password: z
+      .string()
+      .trim()
+      .transform((val) => (val === '' ? null : val))
+      .nullable(),
     password: z
       .union([z.string().trim(), z.null()])
-      .transform((val) => (val === '' || val === null ? null : val))
-      .refine(
-        (val) => val === null || val.length >= 6,
-        'A senha deve ter pelo menos 6 caracteres.',
-      ),
+      .transform((val) => (val === '' ? null : val)),
     confirm_password: z
       .string()
       .trim()
@@ -36,24 +36,48 @@ const profileSchema = z
       .nullable(),
   })
   .superRefine((data, ctx) => {
-    const { password, confirm_password } = data
+    const { old_password, password, confirm_password } = data
 
-    // If the user filled the password, confirmation is mandatory
-    if (password && !confirm_password) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ['confirm_password'],
-        message: 'Informe a confirmação da senha.',
-      })
-    }
+    if (old_password || password || confirm_password) {
+      if (!old_password) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['old_password'],
+          message: 'Informe a senha antiga.',
+        })
+      }
 
-    // If both exist, they need to match
-    if (password && confirm_password && password !== confirm_password) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ['confirm_password'],
-        message: 'A confirmação de senha não confere.',
-      })
+      if (!password) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['password'],
+          message: 'Informe a nova senha.',
+        })
+      }
+
+      if (!confirm_password) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['confirm_password'],
+          message: 'Informe a confirmação da senha.',
+        })
+      }
+
+      if (password && password.length < 6) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['password'],
+          message: 'A senha deve ter pelo menos 6 caracteres.',
+        })
+      }
+
+      if (password && confirm_password && password !== confirm_password) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['confirm_password'],
+          message: 'A confirmação de senha não confere.',
+        })
+      }
     }
   })
 
