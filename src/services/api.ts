@@ -70,6 +70,24 @@ api.registerInterceptTokenManager = (signOut) => {
                 token: data.token,
                 refresh_token: data.refresh_token,
               })
+
+              if (originalRequestConfig.data) {
+                originalRequestConfig.data = JSON.parse(
+                  originalRequestConfig.data,
+                )
+              }
+
+              originalRequestConfig.headers = {
+                Authorization: `Bearer ${data.token}`,
+              }
+              api.defaults.headers.common['Authorization'] =
+                `Bearer ${data.token}`
+
+              failedQueued.forEach((request) => {
+                request.onSuccess(data.token)
+              })
+
+              resolve(api(originalRequestConfig))
             } catch (error: any) {
               failedQueued.forEach((request) => {
                 request.onFailure(error)
