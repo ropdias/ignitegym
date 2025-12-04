@@ -56,8 +56,8 @@ export function Exercise() {
           <ToastMessage
             id={id}
             action="success"
-            title="Exercício registrado"
-            description="Parabéns! Exercício registrado no seu histórico."
+            title="Exercise recorded"
+            description="Congratulations! Exercise recorded in your history."
             onClose={() => toast.close(id)}
           />
         ),
@@ -68,7 +68,7 @@ export function Exercise() {
       const isAppError = error instanceof AppError
       const description = isAppError
         ? error.message
-        : 'Não foi possível registrar o exercício'
+        : "Couldn't register the exercise"
 
       toast.show({
         placement: 'top',
@@ -76,7 +76,7 @@ export function Exercise() {
           <ToastMessage
             id={id}
             action="error"
-            title="Erro ao registrar exercício"
+            title="Error registering exercise"
             description={description}
             onClose={() => toast.close(id)}
           />
@@ -96,7 +96,7 @@ export function Exercise() {
       const isAppError = error instanceof AppError
       const description = isAppError
         ? error.message
-        : 'Não foi possível carregar os detalhes do exercício'
+        : "Couldn't load exercise details"
 
       toast.show({
         placement: 'top',
@@ -104,7 +104,7 @@ export function Exercise() {
           <ToastMessage
             id={id}
             action="error"
-            title="Erro ao buscar o exercício"
+            title="Error fetching exercise"
             description={description}
             onClose={() => toast.close(id)}
           />
@@ -161,7 +161,7 @@ export function Exercise() {
               source={{
                 uri: `${api.defaults.baseURL}/exercise/demo/${exercise?.demo}`,
               }}
-              alt="Exercício"
+              alt="Exercise"
               mb="$3"
               resizeMode="cover"
               rounded="$lg"
@@ -179,20 +179,20 @@ export function Exercise() {
                 <HStack>
                   <SeriesSvg />
                   <Text color="$gray200" ml="$2">
-                    {exercise.series} séries
+                    {exercise.series} sets
                   </Text>
                 </HStack>
 
                 <HStack>
                   <RepetitionsSvg />
                   <Text color="$gray200" ml="$2">
-                    {exercise.repetitions} repetições
+                    {exercise.repetitions} reps
                   </Text>
                 </HStack>
               </HStack>
 
               <Button
-                title="Marcar como realizado"
+                title="Mark as completed"
                 isLoading={sendingRegister}
                 onPress={handleExerciseHistoryRegister}
               />

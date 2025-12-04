@@ -107,15 +107,16 @@ api.registerInterceptTokenManager = (signOut) => {
 
       // For timeout errors
       if (requestError.code === 'ECONNABORTED') {
-        return Promise.reject(new AppError('Timeout. Verifique sua conexão.'))
+        return Promise.reject(
+          new AppError('Request timeout. Check your connection.'),
+        )
       }
 
       // For HTTP errors (4xx, 5xx)
       if (requestError.response) {
         return Promise.reject(
           new AppError(
-            requestError.response.data?.message ||
-              'Erro ao processar requisição',
+            requestError.response.data?.message || 'Error processing request',
           ),
         )
       }
@@ -123,7 +124,7 @@ api.registerInterceptTokenManager = (signOut) => {
       // For network/connection errors
       if (requestError.request) {
         return Promise.reject(
-          new AppError('Erro de conexão. Verifique sua internet.'),
+          new AppError('Connection error. Check your internet.'),
         )
       }
 

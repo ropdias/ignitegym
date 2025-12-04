@@ -30,7 +30,7 @@ export function ExerciseCard({ data, ...props }: Props) {
           source={{
             uri: `${api.defaults.baseURL}/exercise/thumb/${data.thumb}`,
           }}
-          alt="Imagem do exercício"
+          alt="Exercise image"
           w="$16"
           h="$16"
           rounded="$md"
@@ -43,7 +43,7 @@ export function ExerciseCard({ data, ...props }: Props) {
             {data.name}
           </Heading>
           <Text fontSize="$sm" color="$gray200" mt="$1" numberOfLines={2}>
-            {data.series} séries x {data.repetitions} repetições
+            {data.series} sets x {data.repetitions} reps
           </Text>
         </VStack>
 

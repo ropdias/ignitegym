@@ -28,7 +28,7 @@ export function History() {
           const isAppError = error instanceof AppError
           const description = isAppError
             ? error.message
-            : 'Não foi possível carregar os detalhes do histórico'
+            : "Couldn't load history details"
 
           toast.show({
             placement: 'top',
@@ -36,7 +36,7 @@ export function History() {
               <ToastMessage
                 id={id}
                 action="error"
-                title="Erro ao buscar o histórico"
+                title="Error fetching history"
                 description={description}
                 onClose={() => toast.close(id)}
               />
@@ -53,7 +53,7 @@ export function History() {
 
   return (
     <VStack flex={1}>
-      <ScreenHeader title="Histórico de Exercícios" />
+      <ScreenHeader title="Exercise History" />
       {isLoading ? (
         <Loading />
       ) : (
@@ -72,8 +72,8 @@ export function History() {
           }
           ListEmptyComponent={() => (
             <Text color="$gray200" textAlign="center">
-              Não há exercícios registrados ainda. {'\n'}
-              Vamos fazer execícios hoje?
+              No exercises recorded yet. {'\n'}
+              Want to do some exercises today?
             </Text>
           )}
           showsVerticalScrollIndicator={false}

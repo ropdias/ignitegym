@@ -25,8 +25,8 @@ import { AppError } from '@utils/AppError'
 import { ToastMessage } from '@components/ToastMessage'
 
 const signInSchema = z.object({
-  email: z.string().min(1, 'Informe o e-mail').trim().email('E-mail inválido'),
-  password: z.string().min(1, 'Informe a senha').trim(),
+  email: z.string().min(1, 'Enter your e-mail').trim().email('Invalid e-mail'),
+  password: z.string().min(1, 'Enter your password').trim(),
 })
 
 type SignInFormData = z.infer<typeof signInSchema>
@@ -64,7 +64,7 @@ export function SignIn() {
 
       const description = isAppError
         ? error.message
-        : 'Não foi possível entrar. Tente novamente mais tarde.'
+        : "Couldn't sign in. Try again later."
 
       toast.show({
         placement: 'top',
@@ -72,7 +72,7 @@ export function SignIn() {
           <ToastMessage
             id={id}
             action="error"
-            title="Erro ao fazer Login"
+            title="Error signing in"
             description={description}
             onClose={() => toast.close(id)}
           />
@@ -92,7 +92,7 @@ export function SignIn() {
           h={624}
           source={BackgroundImg}
           defaultSource={BackgroundImg}
-          alt="Pessoas treinando"
+          alt="People working out"
           position="absolute"
         />
 
@@ -101,12 +101,12 @@ export function SignIn() {
             <Logo />
 
             <Text color="$gray100" fontSize="$sm">
-              Treine sua mente e seu corpo
+              Train your mind and body
             </Text>
           </Center>
 
           <Center gap="$2">
-            <Heading color="$gray100">Acesse sua conta</Heading>
+            <Heading color="$gray100">Access your account</Heading>
 
             <Controller
               control={control}
@@ -128,7 +128,7 @@ export function SignIn() {
               name="password"
               render={({ field: { onChange, value } }) => (
                 <Input
-                  placeholder="Senha"
+                  placeholder="Password"
                   secureTextEntry
                   onChangeText={onChange}
                   value={value}
@@ -138,7 +138,7 @@ export function SignIn() {
             />
 
             <Button
-              title="Acessar"
+              title="Sign in"
               onPress={handleSubmit(handleSignIn)}
               isLoading={isLoading}
             />
@@ -146,11 +146,11 @@ export function SignIn() {
 
           <Center flex={1} justifyContent="flex-end" marginTop="$4">
             <Text color="$gray100" fontSize="$sm" mb="$3" fontFamily="$body">
-              Ainda não tem acesso?
+              Don&apos;t have access yet?
             </Text>
 
             <Button
-              title="Criar conta"
+              title="Create account"
               variant="outline"
               onPress={handleNewAccount}
             />

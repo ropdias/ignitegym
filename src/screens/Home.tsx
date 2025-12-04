@@ -15,7 +15,7 @@ import { Loading } from '@components/Loading'
 export function Home() {
   const [exercises, setExercises] = useState<ExerciseDTO[]>([])
   const [groups, setGroups] = useState<string[]>([])
-  const [groupSelected, setGroupSelected] = useState('antebraço')
+  const [groupSelected, setGroupSelected] = useState('back')
   const [isLoading, setIsLoading] = useState(true)
 
   const navigation = useNavigation<HomeStackNavigationProp>()
@@ -34,7 +34,7 @@ export function Home() {
 
       const description = isAppError
         ? error.message
-        : 'Não foi possível carregar os grupos musculares'
+        : "Couldn't load muscle groups"
 
       toast.show({
         placement: 'top',
@@ -42,7 +42,7 @@ export function Home() {
           <ToastMessage
             id={id}
             action="error"
-            title="Erro ao buscar os grupos musculares"
+            title="Error fetching muscle groups"
             description={description}
             onClose={() => toast.close(id)}
           />
@@ -66,7 +66,7 @@ export function Home() {
           const isAppError = error instanceof AppError
           const description = isAppError
             ? error.message
-            : 'Não foi possível carregar os exercícios'
+            : "Couldn't load exercises"
 
           toast.show({
             placement: 'top',
@@ -74,7 +74,7 @@ export function Home() {
               <ToastMessage
                 id={id}
                 action="error"
-                title="Erro ao buscar os exercícios"
+                title="Error fetching exercises"
                 description={description}
                 onClose={() => toast.close(id)}
               />
@@ -114,7 +114,7 @@ export function Home() {
         <VStack px="$8" flex={1}>
           <HStack justifyContent="space-between" mb="$5" alignItems="center">
             <Heading color="$gray200" fontSize="$md">
-              Exercícios
+              Exercises
             </Heading>
             <Text color="$gray200" fontSize="$sm" fontFamily="$body">
               {exercises.length}

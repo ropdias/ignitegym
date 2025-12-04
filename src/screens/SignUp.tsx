@@ -26,21 +26,21 @@ import { useAuth } from '@hooks/useAuth'
 
 const signUpSchema = z
   .object({
-    name: z.string().min(1, 'Nome é obrigatório').trim(),
+    name: z.string().min(1, 'Name is required').trim(),
     email: z
       .string()
-      .min(1, 'Informe o e-mail')
+      .min(1, 'Enter your e-mail')
       .trim()
-      .email('E-mail inválido'),
-    password: z.string().min(1, 'Informe a senha').trim(),
+      .email('Invalid e-mail'),
+    password: z.string().min(1, 'Enter your password').trim(),
     password_confirm: z
       .string()
-      .min(1, 'Confirmação de senha é obrigatória')
+      .min(1, 'Password confirmation is required')
       .trim(),
   })
   .refine((data) => data.password === data.password_confirm, {
     path: ['password_confirm'],
-    message: 'As senhas não coincidem',
+    message: 'Passwords do not match',
   })
 
 type SignUpFormData = z.infer<typeof signUpSchema>
@@ -81,7 +81,7 @@ export function SignUp() {
 
       const description = isAppError
         ? error.message
-        : 'Não foi possível criar a conta. Tente novamente mais tarde'
+        : "Couldn't create account. Try again later"
 
       toast.show({
         placement: 'top',
@@ -89,7 +89,7 @@ export function SignUp() {
           <ToastMessage
             id={id}
             action="error"
-            title="Erro ao criar conta"
+            title="Error creating account"
             description={description}
             onClose={() => toast.close(id)}
           />
@@ -109,7 +109,7 @@ export function SignUp() {
           h={624}
           source={BackgroundImg}
           defaultSource={BackgroundImg}
-          alt="Pessoas treinando"
+          alt="People working out"
           position="absolute"
         />
 
@@ -118,19 +118,19 @@ export function SignUp() {
             <Logo />
 
             <Text color="$gray100" fontSize="$sm">
-              Treine sua mente e seu corpo
+              Train your mind and body
             </Text>
           </Center>
 
           <Center flex={1} gap="$2">
-            <Heading color="$gray100">Crie sua conta</Heading>
+            <Heading color="$gray100">Create your account</Heading>
 
             <Controller
               control={control}
               name="name"
               render={({ field: { onChange, value } }) => (
                 <Input
-                  placeholder="Nome"
+                  placeholder="Name"
                   onChangeText={onChange}
                   value={value}
                   errorMessage={errors.name?.message}
@@ -158,7 +158,7 @@ export function SignUp() {
               name="password"
               render={({ field: { onChange, value } }) => (
                 <Input
-                  placeholder="Senha"
+                  placeholder="Password"
                   secureTextEntry
                   onChangeText={onChange}
                   value={value}
@@ -171,7 +171,7 @@ export function SignUp() {
               name="password_confirm"
               render={({ field: { onChange, value } }) => (
                 <Input
-                  placeholder="Confirmar a Senha"
+                  placeholder="Confirm password"
                   secureTextEntry
                   onChangeText={onChange}
                   value={value}
@@ -183,14 +183,14 @@ export function SignUp() {
             />
 
             <Button
-              title="Criar e acessar"
+              title="Create and sign in"
               onPress={handleSubmit(handleSignUp)}
               isLoading={isLoading}
             />
           </Center>
 
           <Button
-            title="Voltar para o login"
+            title="Back to sign in"
             variant="outline"
             mt="$12"
             onPress={handleGoBack}

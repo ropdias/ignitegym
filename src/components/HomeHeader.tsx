@@ -19,11 +19,11 @@ export function HomeHeader() {
         }
         w="$16"
         h="$16"
-        alt="Imagem do usuário"
+        alt="User photo"
       />
       <VStack flex={1}>
         <Text color="$gray100" fontSize="$sm">
-          Olá
+          Hello
         </Text>
         <Heading color="$gray100" fontSize="$md">
           {user.name}

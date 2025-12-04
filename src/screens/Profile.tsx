@@ -19,12 +19,12 @@ import defaulUserPhotoImg from '@assets/userPhotoDefault.png'
 
 const profileSchema = z
   .object({
-    name: z.string().trim().min(1, 'Nome é obrigatório'),
+    name: z.string().trim().min(1, 'Name is required'),
     email: z
       .string()
       .trim()
-      .min(1, 'Informe o e-mail')
-      .email('E-mail inválido'),
+      .min(1, 'Enter your e-mail')
+      .email('Invalid e-mail'),
     old_password: z
       .string()
       .trim()
@@ -47,7 +47,7 @@ const profileSchema = z
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ['old_password'],
-          message: 'Informe a senha antiga.',
+          message: 'Enter your old password.',
         })
       }
 
@@ -55,7 +55,7 @@ const profileSchema = z
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ['password'],
-          message: 'Informe a nova senha.',
+          message: 'Enter your new password.',
         })
       }
 
@@ -63,7 +63,7 @@ const profileSchema = z
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ['confirm_password'],
-          message: 'Informe a confirmação da senha.',
+          message: 'Enter the password confirmation.',
         })
       }
 
@@ -71,7 +71,7 @@ const profileSchema = z
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ['password'],
-          message: 'A senha deve ter pelo menos 6 caracteres.',
+          message: 'Password must be at least 6 characters long.',
         })
       }
 
@@ -79,7 +79,7 @@ const profileSchema = z
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ['confirm_password'],
-          message: 'A confirmação de senha não confere.',
+          message: "Password confirmation doesn't match.",
         })
       }
     }
@@ -123,8 +123,8 @@ export function Profile() {
           <ToastMessage
             id={id}
             action="success"
-            title="Sucesso!"
-            description="Perfil atualizado"
+            title="Success!"
+            description="Profile updated"
             onClose={() => toast.close(id)}
           />
         ),
@@ -133,7 +133,7 @@ export function Profile() {
       const isAppError = error instanceof AppError
       const description = isAppError
         ? error.message
-        : 'Não foi possível atualizar os dados. Tente novamente mais tarde.'
+        : "Couldn't update data. Try again later."
 
       toast.show({
         placement: 'top',
@@ -141,7 +141,7 @@ export function Profile() {
           <ToastMessage
             id={id}
             action="error"
-            title="Erro ao atualizar o perfil"
+            title="Error updating profile"
             description={description}
             onClose={() => toast.close(id)}
           />
@@ -178,8 +178,8 @@ export function Profile() {
               <ToastMessage
                 id={id}
                 action="error"
-                title="Imagem muito grande!"
-                description="Escolha uma imagem de até 5MB."
+                title="Image too large!"
+                description="Choose an image up to 5MB."
                 onClose={() => toast.close(id)}
               />
             ),
@@ -220,8 +220,8 @@ export function Profile() {
             <ToastMessage
               id={id}
               action="success"
-              title="Sucesso!"
-              description="Foto atualizada"
+              title="Success!"
+              description="Photo updated"
               onClose={() => toast.close(id)}
             />
           ),
@@ -231,7 +231,7 @@ export function Profile() {
       const isAppError = error instanceof AppError
       const description = isAppError
         ? error.message
-        : 'Não foi possível atualizar a imagem do perfil. Tente novamente mais tarde.'
+        : "Couldn't update profile image. Try again later."
 
       toast.show({
         placement: 'top',
@@ -239,7 +239,7 @@ export function Profile() {
           <ToastMessage
             id={id}
             action="error"
-            title="Erro ao atualizar a imagem do perfil"
+            title="Error updating profile image"
             description={description}
             onClose={() => toast.close(id)}
           />
@@ -250,7 +250,7 @@ export function Profile() {
 
   return (
     <VStack flex={1}>
-      <ScreenHeader title="Perfil" />
+      <ScreenHeader title="Profile" />
       <ScrollView contentContainerStyle={{ paddingBottom: 36 }}>
         <Center mt="$6" px="$10">
           <UserPhoto
@@ -260,7 +260,7 @@ export function Profile() {
                 : defaulUserPhotoImg
             }
             size="xl"
-            alt="Imagem do usuário"
+            alt="User photo"
           />
           <TouchableOpacity onPress={handleUserPhotoSelect}>
             <Text
@@ -270,7 +270,7 @@ export function Profile() {
               mt="$2"
               mb="$8"
             >
-              Alterar Foto
+              Change photo
             </Text>
           </TouchableOpacity>
 
@@ -280,7 +280,7 @@ export function Profile() {
               name="name"
               render={({ field: { value, onChange } }) => (
                 <Input
-                  placeholder="Nome"
+                  placeholder="Name"
                   bg="$gray600"
                   onChangeText={onChange}
                   value={value}
@@ -310,7 +310,7 @@ export function Profile() {
             mt="$12"
             mb="$2"
           >
-            Alterar senha
+            Change password
           </Heading>
 
           <Center w="$full" gap="$4">
@@ -319,7 +319,7 @@ export function Profile() {
               name="old_password"
               render={({ field: { onChange } }) => (
                 <Input
-                  placeholder="Senha antiga"
+                  placeholder="Old password"
                   bg="$gray600"
                   secureTextEntry
                   onChangeText={onChange}
@@ -333,7 +333,7 @@ export function Profile() {
               name="password"
               render={({ field: { onChange } }) => (
                 <Input
-                  placeholder="Nova senha"
+                  placeholder="New password"
                   bg="$gray600"
                   secureTextEntry
                   onChangeText={onChange}
@@ -347,7 +347,7 @@ export function Profile() {
               name="confirm_password"
               render={({ field: { onChange } }) => (
                 <Input
-                  placeholder="Confirme a nova senha"
+                  placeholder="Confirm new password"
                   bg="$gray600"
                   secureTextEntry
                   onChangeText={onChange}
@@ -357,7 +357,7 @@ export function Profile() {
             />
 
             <Button
-              title="Atualizar"
+              title="Update"
               onPress={handleSubmit(handleProfileUpdate)}
               isLoading={isUpdating}
             />
